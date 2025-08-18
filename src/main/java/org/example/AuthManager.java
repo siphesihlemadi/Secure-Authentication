@@ -21,4 +21,17 @@ public class AuthManager {
             argon2.wipeArray(password.toCharArray());
         }
     }
+    /**
+     * method to verify a password against a stored hash
+     */
+    public static boolean verifyPassword(String password, String storedHash){
+        Argon2 argon2 = Argon2Factory.create(
+                Argon2Factory.Argon2Types.ARGON2id
+        );
+        try{
+            return argon2.verify(storedHash,password);
+        }finally {
+            argon2.wipeArray(password.toCharArray());
+        }
+    }
 }
