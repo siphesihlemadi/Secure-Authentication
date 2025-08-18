@@ -53,4 +53,38 @@ public class DatabaseManager {
         }
     }
 
+    /**
+     * method the verifies the user.
+     * takes password and email as parameters.
+     * retrieves stored hash from row that matches stored email.
+     * returns user first name upon verification.
+     * prints "Incorrect password" if user email found but password does not match.
+     * SQL exception is caught and message is printed.
+     */
+    public static String verifyUserPassword(String password, String email) {
+        String selectSql = "SELECT first_name,password FROM users WHERE email = ?";
+
+        try (Connection conn = DriverManager.getConnection(url);
+             PreparedStatement pstmt = conn.prepareStatement(selectSql)) {
+
+            pstmt.setString(1, email);
+            ResultSet rs = pstmt.executeQuery();
+
+            if (rs.next()) {
+                String firstName = rs.getString("first_name");
+                String storedHash = rs.getString("password");
+
+                if (AuthManager.verifyPassword(password, storedHash)) {
+                    java.util.Arrays.fill(password.toCharArray(), '\0');
+                    return firstName;
+                } else {
+                    System.out.println("Incorrect Password");
+                }
+            }
+        } catch (SQLException e) {
+            System.out.println(e.getMessage());
+        }
+        return "User not found";
+    }
+
 }
