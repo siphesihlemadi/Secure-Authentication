@@ -50,6 +50,8 @@ public class DatabaseManager {
             java.util.Arrays.fill(password.toCharArray(), '\0');
         } catch (SQLException e) {
             System.out.println(e.getMessage());
+        }finally {
+            java.util.Arrays.fill(password.toCharArray(),'\0');
         }
     }
 
@@ -78,7 +80,7 @@ public class DatabaseManager {
                     java.util.Arrays.fill(password.toCharArray(), '\0');
                     return firstName;
                 } else {
-                    System.out.println("Incorrect Password");
+                    return "Incorrect Password";
                 }
             }
         } catch (SQLException e) {
