@@ -36,22 +36,34 @@ public class DatabaseManager {
      */
     public static void insertUserToUsers(String name, String lastName, String email, String password) {
         String insertSQL = "INSERT INTO users(first_name,last_name,email,password) VALUES(?,?,?,?)";
+        String checkSQL = "SELECT 1 FROM users WHERE email = ?";
+        try (Connection conn = DriverManager.getConnection(url)) {
 
-        try (Connection conn = DriverManager.getConnection(url);
-             PreparedStatement pstmt = conn.prepareStatement(insertSQL)) {
+            try (PreparedStatement checkStmt = conn.prepareStatement(checkSQL)) {
+                checkStmt.setString(1, email);
+                ResultSet rs = checkStmt.executeQuery();
 
-            pstmt.setString(1, name);
-            pstmt.setString(2, lastName);
-            pstmt.setString(3, email);
-            pstmt.setString(4, AuthManager.hashPassword(password));
-            pstmt.executeUpdate();
+                if (rs.next()) {
+                    System.out.println("User with email already exists");
+                    return;
+                }
+            }
 
-            System.out.println("Data inserted.");
-            java.util.Arrays.fill(password.toCharArray(), '\0');
+            try (PreparedStatement insertStmt = conn.prepareStatement(insertSQL)) {
+
+
+                insertStmt.setString(1, name);
+                insertStmt.setString(2, lastName);
+                insertStmt.setString(3, email);
+                insertStmt.setString(4, AuthManager.hashPassword(password));
+                insertStmt.executeUpdate();
+
+                System.out.println("Data inserted.");
+            }
         } catch (SQLException e) {
             System.out.println(e.getMessage());
-        }finally {
-            java.util.Arrays.fill(password.toCharArray(),'\0');
+        } finally {
+            java.util.Arrays.fill(password.toCharArray(), '\0');
         }
     }
 
