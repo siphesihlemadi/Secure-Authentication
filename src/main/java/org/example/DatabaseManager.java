@@ -92,13 +92,13 @@ public class DatabaseManager {
                     java.util.Arrays.fill(password.toCharArray(), '\0');
                     return firstName;
                 } else {
-                    return "Incorrect Password";
+                    return null;
                 }
             }
         } catch (SQLException e) {
             System.out.println(e.getMessage());
         }
-        return "User not found";
+        return null;
     }
 
 }
